@@ -1,0 +1,13 @@
+$layout-padding: (
+  xxlarge: 30px,
+  xlarge: 25px,
+  large: 20px,
+  default: 15px,
+  small: 10px,
+  xsmall: 5px,
+  xxsmall: 2.5px
+);
+
+@function padding($key) {
+  @return map-get($map: $layout-padding, $key: $key)
+}

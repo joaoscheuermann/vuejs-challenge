@@ -1,6 +1,5 @@
 <template>
-  <div id="app">
-    <div>{{ sum }}</div>
+  <div :id="$style.app">
     <router-view/>
   </div>
 </template>
@@ -21,5 +20,14 @@ export default {
 </script>
 
 <style lang="scss" module>
+  @import './style/modules/app.module';
+  @import './style/modules/padding.module';
 
+  #app {
+    height: 100%;
+    width: 100%;
+
+    padding-top: padding('default');
+    padding-bottom: padding('default');
+  }
 </style>

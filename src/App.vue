@@ -21,13 +21,13 @@ export default {
 
 <style lang="scss" module>
   @import './style/modules/app.module';
-  @import './style/modules/padding.module';
+  @import './style/modules/spacing.module';
 
   #app {
     height: 100%;
     width: 100%;
 
-    padding-top: padding('default');
-    padding-bottom: padding('default');
+    padding-top: spacing('default');
+    padding-bottom: spacing('default');
   }
 </style>

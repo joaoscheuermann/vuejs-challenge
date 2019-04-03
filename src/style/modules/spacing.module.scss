@@ -1,4 +1,4 @@
-$layout-padding: (
+$layout-spacing: (
   xxlarge: 30px,
   xlarge: 25px,
   large: 20px,
@@ -8,6 +8,6 @@ $layout-padding: (
   xxsmall: 2.5px
 );
 
-@function padding($key) {
-  @return map-get($map: $layout-padding, $key: $key)
+@function spacing($key) {
+  @return map-get($map: $layout-spacing, $key: $key)
 }

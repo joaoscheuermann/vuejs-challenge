@@ -26,8 +26,5 @@ export default {
   #app {
     height: 100%;
     width: 100%;
-
-    padding-top: spacing('default');
-    padding-bottom: spacing('default');
   }
 </style>

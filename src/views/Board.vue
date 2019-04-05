@@ -1,13 +1,13 @@
 <template>
   <div class="columns-wrapper">
-    <Column v-for="column in columns" :column="column" :key="column.id"/>
+    <Column v-for="id in order" :id="id" :key="id"/>
 
     <button @click="createColumn"> ADD COLUMN </button>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Column from '@/components/Column.vue';
 
 export default {
@@ -17,9 +17,9 @@ export default {
   },
 
   computed: {
-    columns() {
-      return this.$store.state.columns.instances;
-    },
+    ...mapGetters('columns', [
+      'order',
+    ]),
   },
 
   methods: {
@@ -44,8 +44,12 @@ export default {
     width: 100%;
     height: 100%;
     white-space: nowrap;
-    overflow-x: scroll;
 
-    padding-left: spacing('default');
+    padding-top: spacing('default');
+    padding-bottom: spacing('default');
+
+    >*{
+      white-space: normal;
+    }
   }
 </style>

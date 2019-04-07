@@ -2,30 +2,42 @@
   <div class="columns-wrapper">
     <Column v-for="id in order" :id="id" :key="id"/>
 
-    <button @click="createColumn"> ADD COLUMN </button>
+    <div class="button-wrapper">
+      <Button @click.native="addColumn"> ADICIONAR COLUNA <i class="material-icons"> add </i> </Button>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import Column from '@/components/Column.vue';
+import Button from '@/components/Button.vue';
 
 export default {
   name: 'home',
   components: {
     Column,
+    Button,
   },
 
   computed: {
     ...mapGetters('columns', [
-      'order',
+      'order'
     ]),
+
+    columns() {
+
+    }
   },
 
   methods: {
     ...mapActions('columns', [
-      'createColumn',
-    ]),
+      'addColumn'
+    ])
+  },
+
+  updated () {
+
   },
 
   mounted() {
@@ -41,15 +53,21 @@ export default {
 
   .columns-wrapper {
     position: relative;
-    width: 100%;
-    height: 100%;
-    white-space: nowrap;
+    padding-top: spacing(small);
+    padding-bottom: spacing(small);
 
-    padding-top: spacing('default');
-    padding-bottom: spacing('default');
+    min-height: 100%;
+    // min-width: 100%;
+
+    white-space: nowrap;
 
     >*{
       white-space: normal;
+    }
+
+    >.button-wrapper {
+      display: inline-block;
+      margin-left: spacing(small);
     }
   }
 </style>

@@ -1,15 +1,50 @@
-$base-font-size: 10px;
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-$layout-font-size: (
-  xxlarge: $base-font-size * 4,
-  xlarge: $base-font-size * 3,
-  large: $base-font-size * 2,
-  default: $base-font-size * 1.6,
-  small: $base-font-size * 1.4,
-  xsmall: $base-font-size * 1.2,
-  xxsmall: $base-font-size * 1,
+$typography: (
+  xxxxlarge: 100px,
+  xxxlarge: 65px,
+  xxlarge: 45px,
+  xlarge: 40px,
+  large: 30px,
+  default: 25px,
+  small: 22px,
+  xsmall: 20px,
+  xxsmall: 17px,
+  xxxsmall: 14px,
+  xxxxsmall: 13px
 );
 
-@function font-size($key: 'default') {
-  @return map-get($map: $layout-font-size, $key: $key)
+@function font-size($key) {
+  @return map-get($map: $typography, $key: $key);
+}
+
+// Font base
+@mixin typography-base ($font, $size, $weight) {
+  font-family: '#{$font}', Arial, Helvetica, sans-serif;
+  font-size: $size;
+  font-weight: $weight;
+  // line-height: unset;
+  -webkit-font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+};
+
+@mixin typography-poppins-thin ($size) {
+  @include typography-base('Poppins', $size, 300)
+}
+
+@mixin typography-poppins-regular ($size) {
+  @include typography-base('Poppins', $size, 400)
+}
+
+@mixin typography-poppins-medium ($size) {
+  @include typography-base('Poppins', $size, 500)
+}
+
+@mixin typography-poppins-semibold ($size) {
+  @include typography-base('Poppins', $size, 600)
+}
+
+@mixin typography-poppins-bold ($size) {
+  @include typography-base('Poppins', $size, 700)
 }

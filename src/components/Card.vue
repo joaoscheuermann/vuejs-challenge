@@ -1,18 +1,20 @@
 <template>
   <div class="card-wrapper">
-    <DraggableElement 
+    <draggable
       class="card"
       @dragstart="handleDragStart"
       @dragend="handleDragEnd"
       @drag="handleDrag">
 
-      Card
-    </DraggableElement>
+      <div class="title"> {{ card.title }} </div>
+      <div class="description"> {{ card.description }} </div>
+      <div class="id"> {{ card.id }} </div>
+    </draggable>
   </div>
 </template>
 
 <script>
-import DraggableElement from '@/components/DraggableElement.vue';
+import draggable from '@/components/draggable.vue';
 
 export default {
   props: {
@@ -22,18 +24,24 @@ export default {
   },
 
   components: {
-    DraggableElement,
+    draggable,
+  },
+
+  computed: {
+    card() {
+      return this.$store.getters['cards/card'](this.id);
+    },
   },
 
   methods: {
     handleDragStart() {
-      console.log('batata')
+
     },
     handleDragEnd() {
-      console.log('batata')
+
     },
     handleDrag() {
-      console.log('asdadas')
+
     },
   },
 };
@@ -45,17 +53,36 @@ export default {
 
   .card-wrapper {
     position: relative;
-    background: red;
+    width: 100%;
+    // height: 400px;
   }
 
   .card {
     position: relative;
     padding: spacing('default');
+    margin-bottom: spacing(small);
     width: 100%;
 
+    background: #ffffff;
+    border: 1px solid #EDEDED;
+    border-radius: 5px;
 
-    font-size: font-size('default');
-    background: lightgrey;
+    > .title {
+      @include typography-poppins-semibold(font-size(xsmall));
+      margin-bottom: spacing(small);
+    }
+
+    > .description {
+      @include typography-poppins-regular(font-size(xxxsmall));
+      text-align: left;
+    }
+
+    >.id {
+      margin-top: 10px;
+      @include typography-poppins-regular(9px);
+      color: #A6A6A6;
+      text-align: right;
+    }
   }
 
 </style>

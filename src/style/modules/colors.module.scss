@@ -1,0 +1,7 @@
+$blue: (
+  default: #3748E8,
+);
+
+@function blue($brightness) {
+  @return map-get($map: $blue, $key: $brightness);
+};

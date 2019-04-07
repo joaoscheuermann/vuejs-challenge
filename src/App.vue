@@ -24,7 +24,12 @@ export default {
   @import './style/modules/spacing.module';
 
   #app {
-    height: 100%;
-    width: 100%;
+    min-height: 100%;
+    width: 100%;;
+    // overflow-y: scroll;
+  }
+
+  html, body {
+    background: #FAFAFA;
   }
 </style>

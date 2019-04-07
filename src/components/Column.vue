@@ -1,32 +1,44 @@
 <template>
-  <div class="column-wrapper" :class="{ dragging: this.dragging }">
-    <DraggableElement
+  <div class="column-wrapper">
+    <draggable 
       class="column"
+      ref="draggable"
       @dragstart="handleDragStart"
       @dragend="handleDragEnd"
       @drag="handleDrag">
 
       <div class="header">
-        <h1 class="title"> {{ column.title }} </h1>
-        <p class="description" > {{ column.id }} </p>
+        <div class="title"> {{column.title}} </div>
+
+        <div class="search-wrapper">
+          <Search />
+          <Button> <i class="material-icons"> sort_by_alpha </i> </Button>
+        </div>
+
+        <div class="id"> {{ column.id }} </div>
       </div>
 
-      <div class="body">
-        <Card />
-      </div>
+      <Card v-for="id in cards" :id="id" :key="id"/>
 
-    </DraggableElement>
+      <div class="button-wrapper">
+        <Button @click.native="handleAddCardButtonClick"> ADICIONAR CARD <i class="material-icons"> add </i> </Button>
+      </div>
+    </draggable>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import DraggableElement from '@/components/DraggableElement.vue';
+import draggable from '@/components/draggable.vue';
+import Search from '@/components/Search.vue';
+import Button from '@/components/Button.vue';
 import Card from '@/components/Card.vue';
 
 export default {
   components: {
-    DraggableElement,
+    draggable,
+    Search,
+    Button,
     Card,
   },
 
@@ -41,6 +53,10 @@ export default {
     column() {
       return this.$store.getters['columns/column'](this.id);
     },
+
+    cards() {
+      return this.$store.getters['cards/order'](this.id);
+    },
   },
 
   data() {
@@ -50,8 +66,11 @@ export default {
   },
 
   methods: {
+    ...mapActions('cards', [
+      'addCard'
+    ]),
     ...mapActions('columns', [
-      'switchColumnOrder'
+      'flipColumns'
     ]),
 
     // Event handling
@@ -64,7 +83,6 @@ export default {
       this.dragging = false;
     },
     handleDrag(e) {
-
       this.$root.$emit('columndrag', { id: this.column.id, event: e, })
     },
 
@@ -72,37 +90,38 @@ export default {
       if(e.id === this.column.id) return
 
       const { x, top, width } = this.$el.getBoundingClientRect();
-      const { lastMousePositionX, currentMousePositionX } = e.event;
+      const { currentMousePositionX, currentMousePositionY, directionX } = e.event;
 
-      this.$el.style = null;
-
-      function intersection (x, area) {
+      function intersectionX (x, area) {
         return x > area.x && x < (area.x + area.width)
       };
       
       // Check for intersections in X
-      if (intersection(currentMousePositionX, { x, width })) {
-        const direction = currentMousePositionX - lastMousePositionX >= 0 ? 'right' : 'left';
+      if (intersectionX(currentMousePositionX, { x, width })) {
         const deltaX = currentMousePositionX - x;
 
-        if (direction === 'left' && (deltaX < width * 0.4)) this.switchColumnOrder({ from: this.column.id, to: e.id });
-        if (direction === 'right' && (deltaX > width * 0.4)) this.switchColumnOrder({ from: e.id, to: this.column.id });
+        if ((directionX === 'right' && (deltaX > width * 0.5)) || (directionX === 'left' && (deltaX < width * 0.5))) {
+          this.flipColumns({ from: e.id, to: this.id })
+          // this.$refs.draggable.updatePosition({ clientX: currentMousePositionX, cientY: currentMousePositionY })
+        }
       };
 
-      // console.log('current:', currentMousePositionX, 'boxX:', x, 'delta:', currentMousePositionX - x)
+    },
+
+    handleAddCardButtonClick () {
+      this.addCard({ parentID: this.id })
     }
   },
 
   mounted() {
-    this.$root.$on('columndrag', this.handleColumDrag)
+    this.$root.$on('columndrag', this.handleColumDrag);
   },
 
   destroyed() {
-    this.$root.$off('columndrag', this.handleColumDrag)
+    this.$root.$off('columndrag', this.handleColumDrag);
   },
 
   updated () {
-    console.log('updated')
   }
 };
 </script>
@@ -114,40 +133,50 @@ export default {
   .column-wrapper {
     position: relative;
     display: inline-block;
-    margin-right: spacing('default');
-    width: calc(100% - #{spacing('default') * 2} + 10px);
-    max-width: 320px;
-    min-height: 320px;
-    max-height: 100%;
-    font-size: font-size('xlarge');
     vertical-align: top;
+    width: 300px;
+
+    user-select: none;
+
+    margin-right: spacing(small);
 
     &:first-child {
-      margin-left: spacing('default');
-    }
-
-    &.dragging {
-      background: lightblue;
+      margin-left: spacing(small);
     }
   }
 
   .column {
-    position: relative;
     width: 100%;
-    user-select: none;
 
     >.header {
-      padding: spacing('default');
-      margin-bottom: spacing('xsmall');
+      padding-top: spacing('xlarge');
+      padding-bottom: spacing('xxlarge');
+      padding-left: spacing(default);
+      padding-right: spacing(default);
 
       >.title {
-        font-size: font-size('default');
+        margin-bottom: spacing(small);
+        @include typography-poppins-bold(font-size(default));
       }
 
-      >.description {
-        font-size: font-size('xsmall');
+      >.search-wrapper {
+        >.search {
+          width: calc(100% - 54px);
+          margin-right: 10px;
+        }
+      }
+
+      >.id {
+        margin-top: 10px;
+        @include typography-poppins-regular(9px);
+        color: #A6A6A6;
+        text-align: right;
       }
     }
 
+    >.button-wrapper {
+      text-align: right;
+      padding-right: spacing(default);
+    }
   }
 </style>

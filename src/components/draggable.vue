@@ -1,5 +1,5 @@
 <template>
-  <div class="dragable" @mousedown="handleMouseDown">
+  <div @mousedown="handleMouseDown">
     <slot/>
   </div>
 </template>
@@ -30,8 +30,6 @@ export default {
       // Mouse Position
       currentMousePositionX: null,
       currentMousePositionY: null,
-      lastMousePositionX: null,
-      lastMousePositionY: null,
 
       // DOM Rect
       rect: {
@@ -71,6 +69,35 @@ export default {
       this.parentRect.height = parentRect.height;
     },
 
+    updatePosition({clientX, clientY}) {
+      const { startX, startY, offsetX, offsetY, getProperties, updateRect, updateParentRect } = this;
+
+      updateRect();
+      updateParentRect();
+
+      if (!this.moving) {
+        this.moving = true;
+        this.$emit('dragstart', getProperties());
+      };
+
+      this.currentMousePositionX = clientX;
+      this.currentMousePositionY = clientY;
+
+      const futureDeltaX = this.currentMousePositionX - this.parentRect.x - this.startX;
+      const futureDeltaY = this.currentMousePositionY - this.parentRect.y - this.startY;
+
+      const directionX = futureDeltaX - this.deltaX >= 0 ? 'right' : 'left';
+      const directionY = futureDeltaY - this.deltaY >= 0 ? 'up' : 'down';
+
+      this.deltaX = futureDeltaX
+      this.deltaY = futureDeltaY
+
+      this.$el.style.left = `${ this.deltaX }px`;
+      this.$el.style.top = `${ this.deltaY }px`;
+
+      this.$emit('drag', Object.assign(getProperties(), { directionX, directionY }));
+    },
+
     handleMouseDown(e) {
       e.stopPropagation();
 
@@ -103,29 +130,8 @@ export default {
       document.removeEventListener('mouseup', handleMouseUp);
     },
 
-    handleMouseMove({ clientX, clientY }) {
-      const { startX, startY, offsetX, offsetY, getProperties, updateRect, updateParentRect } = this;
-
-      updateRect();
-      updateParentRect();
-
-      if (!this.moving) {
-        this.moving = true;
-        this.$emit('dragstart', getProperties());
-      };
-
-      this.lastMousePositionX = this.currentMousePositionX;
-      this.lastMousePositionY = this.currentMousePositionY;
-      this.currentMousePositionX = clientX;
-      this.currentMousePositionY = clientY;
-
-      this.deltaX = this.currentMousePositionX - this.parentRect.x - this.startX;
-      this.deltaY = this.currentMousePositionY - this.parentRect.y - this.startY;
-
-      this.$el.style.left = `${ this.deltaX }px`;
-      this.$el.style.top = `${ this.deltaY }px`;
-
-      this.$emit('drag', getProperties());
+    handleMouseMove(e) {
+      this.updatePosition(e);
     },
   },
 
@@ -138,21 +144,10 @@ export default {
   },
 
   updated () {
-
   },
 };
 </script>
 
 
 <style lang="scss">
-
-  .columns-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    white-space: nowrap;
-    overflow-x: scroll;
-
-    padding-left: spacing('default');
-  }
 </style>

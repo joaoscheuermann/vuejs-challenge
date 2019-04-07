@@ -4,47 +4,38 @@ import uuid from 'uuid/v1';
 export default {
   namespaced: true,
 
-  state: {
-    instances: {},
-    order: [],
-  },
+  state: {},
 
   getters: {
-    order: state => state.order,
-    column: state => id => state.instances[id],
-    columns: state => state.instances,
+    column: state => columndID => state[columndID],
+    order: state => Object.keys(state).sort((a, b) => state[a].order - state[b].order)
   },
 
   mutations: {
-    CREATE_COLUMN: (state) => {
-      const column = {
-        id: uuid(),
-        title: 'Untitled',
-      };
-
-      Vue.set(state.instances, column.id, column);
-      Vue.set(state, 'order', [...state.order, column.id]);
-    },
-
-    SWITCH_COLUMN_ORDER: (state, { from, to }) => {
-      const order = [...state.order];
-      const indexTo = state.order.indexOf(to);
-      const indexFrom = state.order.indexOf(from);
-
-      order[indexTo] = from;
-      order[indexFrom] = to;
-
-      Vue.set(state, 'order', order);
-    },
+    ADD_COLUMN: (state, payload) => Vue.set(state, payload.id, payload),
+    FLIP_COLUMNS: (state, { from, to }) => {
+      let oldFromOrder = state[from].order
+      let oldToOrder = state[to].order
+      Vue.set(state[from], 'order', oldToOrder)
+      Vue.set(state[to], 'order', oldFromOrder)
+    }
   },
 
   actions: {
-    createColumn: ({ commit }) => {
-      commit('CREATE_COLUMN');
+    addColumn: ({ commit, state }) => {
+      let order = Object.keys(state).map(id => state[id].order).reduce((previous, current) => current > previous ? current : previous, -1);
+
+      const column = {
+        id: uuid(),
+        title: 'Untitled',
+        order: ++order,
+      };
+
+      commit('ADD_COLUMN', column);
     },
 
-    switchColumnOrder: ({ commit }, payload) => {
-      commit('SWITCH_COLUMN_ORDER', payload);
-    },
+    flipColumns ({ commit }, payload) {
+      commit('FLIP_COLUMNS', payload)
+    }
   },
 };

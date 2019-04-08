@@ -1,4 +1,14 @@
-# vuejs-challenge
+# Desafio Task Board
+
+Desafio Task Board para a Talentify.
+
+Eu realmente me desafiei, e implementei tudo do zero para entender mais da problematica.
+
+Existem alguns problemas em relação a funcionalidade que vão ficar claras logo de cara, mas devido ao tempo eu não consegui revisar a arquitetura.
+
+Com certeza hà necessidade de refatoração do código.
+
+Provavelmente o Babel ja transpilou o código para em IE8+, porem não consegui testar.
 
 ## Project setup
 ```

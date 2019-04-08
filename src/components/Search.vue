@@ -1,5 +1,5 @@
 <template>
-  <input class="search" type="search" name="search" id="" placeholder="PROCURAR CARD">
+  <input class="search" type="search" name="search" @input="$emit('input', $event)" placeholder="PROCURAR CARD">
 </template>
 
 <script>

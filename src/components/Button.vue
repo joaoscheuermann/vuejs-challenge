@@ -10,7 +10,7 @@
   @import '../style/modules/typography.module';
 
   .button {
-    padding: spacing('small') spacing('small');
+    padding: spacing('small') spacing('default');
 
     // Typography
     @include typography-poppins-semibold(font-size(xxxxsmall));

@@ -36,12 +36,8 @@ export default {
     ])
   },
 
-  updated () {
-
-  },
-
   mounted() {
-
+    this.addColumn()
   },
 };
 </script>

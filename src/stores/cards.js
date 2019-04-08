@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import uuid from 'uuid/v1';
+import faker from 'faker';
+
+faker.locale = 'pt_BR'
 
 export default {
   namespaced: true,
@@ -21,6 +24,10 @@ export default {
       let oldToOrder = state[to].order;
       Vue.set(state[from], 'order', oldToOrder);
       Vue.set(state[to], 'order', oldFromOrder);
+    },
+    REMOVE_CARD: (state, { card }) => {
+      state[card] = null;
+      delete state[card];
     }
   },
   actions: {
@@ -30,7 +37,7 @@ export default {
       const card = {
         id: uuid(),
         parent: parentID,
-        title: 'Untitled',
+        title: `${faker.commerce.productName()}`,
         order: ++order,
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut',
       };
@@ -45,6 +52,10 @@ export default {
 
     flipCards ({ commit }, payload) {
       commit('FLIP_CARDS', payload)
+    },
+
+    removeCard ({ commit }, payload) {
+      commit('REMOVE_CARD', payload)
     }
   },
 };

@@ -12,8 +12,7 @@
         <div class="title"> {{column.title}} </div>
 
         <div class="search-wrapper">
-          <Search />
-          <Button> <i class="material-icons"> sort_by_alpha </i> </Button>
+          <Search @input="handleSearchInput"/>
         </div>
 
         <div class="id"> {{ column.id }} </div>
@@ -23,6 +22,8 @@
 
       <div class="button-wrapper">
         <Button @click.native="handleAddCardButtonClick"> ADICIONAR CARD <i class="material-icons"> add </i> </Button>
+
+        <div class="remove" @click="handleRemoveColumnClick">REMOVER COLUNA</div>
       </div>
     </draggable>
   </div>
@@ -50,20 +51,21 @@ export default {
     },
   },
 
+  data() {
+    return {
+      dragging: false,
+      filter: ''
+    };
+  },
+
   computed: {
     column() {
       return this.$store.getters['columns/column'](this.id);
     },
 
     cards() {
-      return this.$store.getters['cards/order'](this.id);
+      return this.$store.getters['cards/order'](this.id).filter(id => this.$store.state['cards'][id].title.toLowerCase().includes(this.filter.toLowerCase()));
     },
-  },
-
-  data() {
-    return {
-      dragging: false
-    };
   },
 
   methods: {
@@ -72,7 +74,8 @@ export default {
       'changeCardParent'
     ]),
     ...mapActions('columns', [
-      'flipColumns'
+      'flipColumns',
+      'removeColumn'
     ]),
 
     intersection (value, start, length) {
@@ -80,6 +83,14 @@ export default {
     },
 
     // Event handling
+    handleSearchInput(e) {
+      this.filter = e.target.value
+    },
+
+    handleRemoveColumnClick() {
+      this.removeColumn({ column: this.column.id })
+    },
+
     handleDragStart(e) {
       this.dragging = true;
       this.$el.style.height = this.$refs.draggable.$el.getBoundingClientRect().height + 'px'
@@ -103,7 +114,6 @@ export default {
 
       // Check for intersections in X
       if (this.intersection(currentMousePositionX, x, width) && ((directionX === 'right' && (deltaX > width * 0.5)) || (directionX === 'left' && (deltaX < width * 0.5)))) this.flipColumns({ from: e.column, to: this.id })
-
     },
 
     handleCardDrag(e) {
@@ -123,6 +133,8 @@ export default {
   mounted() {
     this.$root.$on('columndrag', this.handleColumDrag);
     this.$root.$on('carddrag', this.handleCardDrag);
+
+    this.addCard({ parentID: this.id })
   },
 
   destroyed() {
@@ -181,7 +193,7 @@ export default {
 
       >.search-wrapper {
         >.search {
-          width: calc(100% - 54px);
+          width: 100%;
           margin-right: 10px;
         }
       }
@@ -198,6 +210,13 @@ export default {
       text-align: right;
       padding-right: spacing(default);
       padding-bottom: spacing(xlarge);
+
+      >.remove {
+        @include typography-poppins-semibold(font-size(xxxsmall));
+        padding: spacing(default);
+        color: red;
+        cursor: pointer;
+      }
     }
   }
 </style>

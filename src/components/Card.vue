@@ -3,6 +3,7 @@
     <draggable
       ref="draggable"
       class="card"
+      @mousedown.native="handleDraggableMouseDown"
       @dragstart="handleDragStart"
       @dragend="handleDragEnd"
       @drag="handleDrag">
@@ -11,6 +12,8 @@
       <div class="description"> {{ card.description }} </div>
 
       <div class="id"> {{ card.id }} </div>
+
+      <div class="remove" @click="handleRemoveCardClick">REMOVER CARD</div>
     </draggable>
   </div>
 </template>
@@ -44,16 +47,24 @@ export default {
 
   methods: {
     ...mapActions('cards', [
-      'flipCards'
+      'flipCards',
+      'removeCard'
     ]),
 
     intersection (value, start, length) {
       return value > start && value < (start + length);
     },
 
+    handleRemoveCardClick() {
+      this.removeCard({ card: this.card.id })
+    },
+
+    handleDraggableMouseDown() {
+      this.$el.style.height = this.$refs.draggable.$el.getBoundingClientRect().height + 'px';
+    },
+
     handleDragStart() {
       this.dragging = true;
-      this.$el.style.height = this.$refs.draggable.$el.getBoundingClientRect().height + 'px';
     },
     handleDragEnd() {
       this.dragging = false;
@@ -91,7 +102,6 @@ export default {
   .card-wrapper {
     position: relative;
     width: 100%;
-    min-height: 158px;
     margin-bottom: spacing(small);
 
     &.dragging {
@@ -128,6 +138,14 @@ export default {
       @include typography-poppins-regular(9px);
       color: #A6A6A6;
       text-align: right;
+    }
+
+    >.remove {
+      @include typography-poppins-semibold(12px);
+      padding-top: spacing(default);
+      color: red;
+      text-align: right;
+      cursor: pointer;
     }
   }
 

@@ -12,6 +12,16 @@ export default {
   },
   mutations: {
     ADD_CARD: (state, payload) => Vue.set(state, payload.id, payload),
+    CHANGE_CARD_PARENT: (state, { card, parent, order }) => {
+      Vue.set(state[card], 'order', order)
+      Vue.set(state[card], 'parent', parent)
+    },
+    FLIP_CARDS: (state, { from, to }) => {
+      let oldFromOrder = state[from].order;
+      let oldToOrder = state[to].order;
+      Vue.set(state[from], 'order', oldToOrder);
+      Vue.set(state[to], 'order', oldFromOrder);
+    }
   },
   actions: {
     addCard: ({ commit, state }, { parentID }) => {
@@ -26,6 +36,15 @@ export default {
       };
 
       commit('ADD_CARD', card);
+    },
+
+    changeCardParent: ({ commit, state, getters }, payload) => {
+      const order = Object.keys(state).filter(cardID => state[cardID].parent === payload.parent).map(id => state[id].order).reduce((previous, current) => current > previous ? current : previous, -1) + 1;
+      commit('CHANGE_CARD_PARENT', {...payload, order})
+    },
+
+    flipCards ({ commit }, payload) {
+      commit('FLIP_CARDS', payload)
     }
   },
 };

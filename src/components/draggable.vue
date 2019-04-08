@@ -89,8 +89,8 @@ export default {
       const directionX = futureDeltaX - this.deltaX >= 0 ? 'right' : 'left';
       const directionY = futureDeltaY - this.deltaY >= 0 ? 'up' : 'down';
 
-      this.deltaX = futureDeltaX
-      this.deltaY = futureDeltaY
+      this.deltaX = futureDeltaX;
+      this.deltaY = futureDeltaY;
 
       this.$el.style.left = `${ this.deltaX }px`;
       this.$el.style.top = `${ this.deltaY }px`;

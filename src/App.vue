@@ -26,7 +26,6 @@ export default {
   #app {
     min-height: 100%;
     width: 100%;;
-    // overflow-y: scroll;
   }
 
   html, body {

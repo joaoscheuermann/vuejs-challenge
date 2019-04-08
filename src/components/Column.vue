@@ -1,6 +1,7 @@
 <template>
-  <div class="column-wrapper">
-    <draggable 
+  <div :class="{ 'column-wrapper': true, dragging }">
+
+    <draggable
       class="column"
       ref="draggable"
       @dragstart="handleDragStart"
@@ -67,45 +68,51 @@ export default {
 
   methods: {
     ...mapActions('cards', [
-      'addCard'
+      'addCard',
+      'changeCardParent'
     ]),
     ...mapActions('columns', [
       'flipColumns'
     ]),
 
+    intersection (value, start, length) {
+      return value > start && value < (start + length);
+    },
+
     // Event handling
     handleDragStart(e) {
-      // console.log(e)
       this.dragging = true;
+      this.$el.style.height = this.$refs.draggable.$el.getBoundingClientRect().height + 'px'
     },
+
     handleDragEnd(e) {
-      // console.log(e)
       this.dragging = false;
+      this.$el.style = null;
     },
+
     handleDrag(e) {
-      this.$root.$emit('columndrag', { id: this.column.id, event: e, })
+      this.$root.$emit('columndrag', { column: this.column.id, event: e });
     },
 
     handleColumDrag (e) {
-      if(e.id === this.column.id) return
+      if(e.column === this.column.id) return
 
-      const { x, top, width } = this.$el.getBoundingClientRect();
+      const { x, width } = this.$el.getBoundingClientRect();
       const { currentMousePositionX, currentMousePositionY, directionX } = e.event;
+      const deltaX = currentMousePositionX - x;
 
-      function intersectionX (x, area) {
-        return x > area.x && x < (area.x + area.width)
-      };
-      
       // Check for intersections in X
-      if (intersectionX(currentMousePositionX, { x, width })) {
-        const deltaX = currentMousePositionX - x;
+      if (this.intersection(currentMousePositionX, x, width) && ((directionX === 'right' && (deltaX > width * 0.5)) || (directionX === 'left' && (deltaX < width * 0.5)))) this.flipColumns({ from: e.column, to: this.id })
 
-        if ((directionX === 'right' && (deltaX > width * 0.5)) || (directionX === 'left' && (deltaX < width * 0.5))) {
-          this.flipColumns({ from: e.id, to: this.id })
-          // this.$refs.draggable.updatePosition({ clientX: currentMousePositionX, cientY: currentMousePositionY })
-        }
-      };
+    },
 
+    handleCardDrag(e) {
+      if(e.column === this.column.id) return
+
+      const { x, width } = this.$el.getBoundingClientRect();
+      const { currentMousePositionX, currentMousePositionY } = e.event;
+
+      if(this.intersection(currentMousePositionX, x, width)) this.changeCardParent({ card: e.card, parent: this.column.id })
     },
 
     handleAddCardButtonClick () {
@@ -115,10 +122,12 @@ export default {
 
   mounted() {
     this.$root.$on('columndrag', this.handleColumDrag);
+    this.$root.$on('carddrag', this.handleCardDrag);
   },
 
   destroyed() {
     this.$root.$off('columndrag', this.handleColumDrag);
+    this.$root.$off('carddrag', this.handleCardDrag);
   },
 
   updated () {
@@ -143,10 +152,21 @@ export default {
     &:first-child {
       margin-left: spacing(small);
     }
+
+    &.dragging {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+
+      >.column {
+        box-shadow: 0px 0px 6px rgba(55, 72, 232, 0.2);
+      }
+    }
   }
 
   .column {
     width: 100%;
+    background: #FAFAFA;
+    border-radius: 5px;
 
     >.header {
       padding-top: spacing('xlarge');
@@ -177,6 +197,7 @@ export default {
     >.button-wrapper {
       text-align: right;
       padding-right: spacing(default);
+      padding-bottom: spacing(xlarge);
     }
   }
 </style>
